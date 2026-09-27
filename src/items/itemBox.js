@@ -1,23 +1,34 @@
+const ITEMS = ['boost', 'shield', 'missile', 'banana'];
 
 class ItemBox {
-  constructor(x, y) { this.x=x; this.y=y; this.collected=false; this.respawnTimer=0; this.respawnTime=5; }
+  constructor(x, y, respawnTime = 5) {
+    this.x = x;
+    this.y = y;
+    this.collected = false;
+    this.respawnTimer = 0;
+    this.respawnTime = respawnTime;
+  }
+
   pickup(kart) {
-    // BUG: 没有原子检查，同帧多人都能拾取
     if (this.collected) return null;
+    if (!kart) return null;
     this.collected = true;
     this.respawnTimer = this.respawnTime;
     return this.randomItem();
   }
+
   update(dt) {
-    if (this.collected) {
-      this.respawnTimer -= dt;
-      if (this.respawnTimer <= 0) this.collected = false;
+    if (!this.collected) return;
+    this.respawnTimer -= dt;
+    if (this.respawnTimer <= 0) {
+      this.respawnTimer = 0;
+      this.collected = false;
     }
   }
+
   randomItem() {
-    const items = ['boost', 'shield', 'missile', 'banana'];
-    return items[Math.floor(Math.random() * items.length)];
+    return ITEMS[Math.floor(Math.random() * ITEMS.length)];
   }
 }
 
-module.exports = { ItemBox };
+module.exports = { ItemBox, ITEMS };
